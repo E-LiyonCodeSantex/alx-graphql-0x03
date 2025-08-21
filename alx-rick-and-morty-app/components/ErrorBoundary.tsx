@@ -1,4 +1,6 @@
-import type { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
+import * as Sentry from '@sentry/react';
+
 interface State {
   hasError: boolean;
 }
@@ -17,9 +19,10 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps , State> {
   static getDerivedStateFromError(error: Error): State {
     return { hasError: true };
   }
-
-  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.log({ error, errorInfo });
+  // This lifecycle method is called when an error is thrown in a child component
+  // It captures the error and logs it to Sentry
+    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    Sentry.captureException(error, { extra: errorInfo });
   }
 
   render() {
